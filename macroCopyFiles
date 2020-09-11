@@ -1,0 +1,191 @@
+Sub Begin()
+
+ThisWorkbookName = ActiveWorkbook.Name
+
+Dim openWorkbook As Workbook
+Dim sPath As String
+Dim tFil As String
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+sPath = ActiveWorkbook.Path
+ChDir sPath
+
+If Len(Dir(sPath & "\Completed", vbDirectory)) = 0 Then
+    MkDir (sPath & "\Completed")
+End If
+
+tFil = Dir(sPath & "\*.xls*")
+
+Do While tFil <> ""
+   
+    If tFil Like "Masterlist*.xlsm" Then
+    Else
+        Set openWorkbook = Workbooks.Open(sPath & "\" & tFil)
+       
+        If openWorkbook.ActiveSheet.ProtectContents = True Then
+            openWorkbook.Close False
+        Else
+            Call Copy 'Copy opens the files and gets info needed
+       
+            openWorkbook.Close False
+       
+            Name sPath & "\" & tFil As sPath & "\Completed\" & tFil
+        End If
+    End If
+   
+    tFil = Dir
+   
+Loop
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+MsgBox ("You're Done! Good Job :)")
+
+End Sub
+
+Sub Copy() 
+
+Dim locCde As String
+Dim dteRun As String
+Dim frstShftCntAct As String
+Dim frstShftOut As String
+Dim scndShftCntAct As String
+Dim scndShftOut As String
+Dim thrdShftCntAct As String
+Dim thrdShftOut As String
+Dim ttlCntAct As String
+Dim ttlOut As String
+Dim frstShftCntPln As String
+Dim scndShftCntPln As String
+Dim thrdShftCntPln As String
+Dim ttlCntPln As String
+Dim aCas As String
+Dim bCas As String
+Dim cCas As String
+Dim dCas As String
+Dim eCas As String
+Dim aDailySup As String
+Dim bDailySup As String
+Dim cDailySup As String
+Dim dDailySup As String
+Dim eDailySup As String
+Dim aCasOrd As String
+Dim bCasOrd As String
+Dim cCasOrd As String
+Dim dCasOrd As String
+Dim eCasOrd As String
+Dim nextRow As Long
+
+'CurrentBookName = ActiveWoorkbook.Name
+   
+        'If UCase(wks.Name) Like UCase("*WR TEMPLATE V2*") Then
+            'wks.Activate
+        Range("D5:G5").UnMerge
+        Range("T3:V3").UnMerge
+        Range("A24:C28").UnMerge
+        Range("E24:G28").UnMerge
+        Range("I24:L28").UnMerge
+       
+        If UCase(Range("D5").Value) Like UCase("*Loc*Codd:*") Then 'Form differs in format for location code, case to bipass errors associated
+            locCde = Range("D6").Value
+        Else
+            locCde = Range("D5").Value
+        End If
+       
+        dteRun = Date - 1
+        frstShftCntAct = Range("H20").Value
+        frstShftOut = Range("J20").Value
+        scndShftCntAct = Range("R20").Value
+        scndShftOut = Range("T20").Value
+        thrdShftCntAct = Range("AB20").Value
+        thrdShftOut = Range("AD20").Value
+        frstShftCntPln = Range("F20").Value + Range("G20").Value
+        scndShftCntPln = Range("P20").Value + Range("Q20").Value
+        thrdShftCntPln = Range("V20").Value + Range("W20").Value
+        aCas = Range("B24").Value
+        bCas = Range("B25").Value
+        cCas = Range("B26").Value
+        dCas = Range("B27").Value
+        eCas = Range("B28").Value
+        aDailySup = Range("F24").Value
+        bDailySup = Range("F25").Value
+        cDailySup = Range("F26").Value
+        dDailySup = Range("F27").Value
+        eDailySup = Range("F28").Value
+        aCasOrd = Range("M24").Value
+        bCasOrd = Range("M25").Value
+        cCasOrd = Range("M26").Value
+        dCasOrd = Range("M27").Value
+        eCasOrd = Range("M28").Value
+       
+        Windows("Masterlist.xlsm").Activate
+        nextRow = Range("A65536").End(xlUp).Row + 1
+        Range("A" & nextRow).Select
+       
+        ThisWorkbook.Sheets("Running Total").Range("A" & nextRow).Value = stCde
+        ThisWorkbook.Sheets("Running Total").Range("B" & nextRow).Value = dte
+        ThisWorkbook.Sheets("Running Total").Range("C" & nextRow).Value = fstShftHCAct
+        ThisWorkbook.Sheets("Running Total").Range("D" & nextRow).Value = fstShftCllOut
+        ThisWorkbook.Sheets("Running Total").Range("E" & nextRow).Value = scndShftHCAct
+        ThisWorkbook.Sheets("Running Total").Range("F" & nextRow).Value = scndShftCllOut
+        ThisWorkbook.Sheets("Running Total").Range("G" & nextRow).Value = thrdShftHCAct
+        ThisWorkbook.Sheets("Running Total").Range("H" & nextRow).Value = thrdShftCllOut
+        ThisWorkbook.Sheets("Running Total").Range("I" & nextRow).Value = Range("C" & nextRow).Value + Range("E" & nextRow).Value + Range("G" & nextRow).Value
+        ThisWorkbook.Sheets("Running Total").Range("J" & nextRow).Value = Range("D" & nextRow).Value + Range("F" & nextRow).Value + Range("H" & nextRow).Value
+        ThisWorkbook.Sheets("Running Total").Range("L" & nextRow).Value = fstShftHCPln
+        ThisWorkbook.Sheets("Running Total").Range("M" & nextRow).Value = scndShftHCPln
+        ThisWorkbook.Sheets("Running Total").Range("N" & nextRow).Value = thrdShftHCPln
+        ThisWorkbook.Sheets("Running Total").Range("O" & nextRow).Value = Range("L" & nextRow).Value + Range("M" & nextRow).Value + Range("N" & nextRow).Value
+        ThisWorkbook.Sheets("Running Total").Range("Q" & nextRow).Value = alphCas
+        ThisWorkbook.Sheets("Running Total").Range("R" & nextRow).Value = vrxCas
+        ThisWorkbook.Sheets("Running Total").Range("S" & nextRow).Value = crwCas
+        ThisWorkbook.Sheets("Running Total").Range("T" & nextRow).Value = oxvrCas
+        ThisWorkbook.Sheets("Running Total").Range("U" & nextRow).Value = dsWpCas
+        ThisWorkbook.Sheets("Running Total").Range("V" & nextRow).Value = alphWeekSup
+        ThisWorkbook.Sheets("Running Total").Range("W" & nextRow).Value = vrxWeekSup
+        ThisWorkbook.Sheets("Running Total").Range("X" & nextRow).Value = crwWeekSup
+        ThisWorkbook.Sheets("Running Total").Range("Y" & nextRow).Value = oxvrWeekSup
+        ThisWorkbook.Sheets("Running Total").Range("Z" & nextRow).Value = dsWpWeekSup
+        ThisWorkbook.Sheets("Running Total").Range("AA" & nextRow).Value = alphCsOrd
+        ThisWorkbook.Sheets("Running Total").Range("AB" & nextRow).Value = vrxCsOrd
+        ThisWorkbook.Sheets("Running Total").Range("AC" & nextRow).Value = crwCsOrd
+        ThisWorkbook.Sheets("Running Total").Range("AD" & nextRow).Value = oxvrCsOrd
+        ThisWorkbook.Sheets("Running Total").Range("AE" & nextRow).Value = dsWpCsOrd
+       
+        ThisWorkbook.Sheets("Running Total").Range("A" & nextRow).Replace What:=" ", Replacement:=""
+       
+        locCde = empty
+        dteRun = empty
+        frstShftCntAct= empty
+        frstShftOut = empty
+        scndShftCntAct= empty
+        scndShftOut = empty
+        thrdShftCntAct= empty
+        thrdShftOut = empty
+        ttlCntAct = empty
+        ttlOut = empty
+        frstShftCntPln = empty
+        scndShftCntPln = empty
+        thrdShftCntPln = empty
+        ttlCntPln = empty
+        aCas = empty
+        bCas = empty
+        cCas = empty
+        dCas = empty
+        eCas = empty
+        aDailySup = empty
+        bDailySup = empty
+        cDailySup = empty
+        dDailySup= empty
+        eDailySup = empty
+        aCasOrd = empty
+        bCasOrd = empty
+        cCasOrd = empty
+        dCasOrd = empty
+        eCasOrd = empty
+        nextRow = empty
+
+End Sub
