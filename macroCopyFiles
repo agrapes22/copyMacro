@@ -12,39 +12,46 @@ Application.DisplayAlerts = False
 sPath = ActiveWorkbook.Path
 ChDir sPath
 
-If Len(Dir(sPath & "\Completed", vbDirectory)) = 0 Then
+If Len(Dir(sPath & "\Completed", vbDirectory)) = 0 Then 'create a "Completed" folder if one doesn't exist
     MkDir (sPath & "\Completed")
 End If
 
-tFil = Dir(sPath & "\*.xls*")
+tFil = Dir(sPath & "\*.xls*") 'select a file from the folder
 
-Do While tFil <> ""
+Do While tFil <> "" 'as long as there is a file available, loop
    
-    If tFil Like "Masterlist*.xlsm" Then
+    If tFil Like "Masterlist*.xlsm" Then 'if the file is the masterlist macro file, skip it
+    
     Else
-        Set openWorkbook = Workbooks.Open(sPath & "\" & tFil)
+    
+        Set openWorkbook = Workbooks.Open(sPath & "\" & tFil) 'open the template file
        
-        If openWorkbook.ActiveSheet.ProtectContents = True Then
+        If openWorkbook.ActiveSheet.ProtectContents = True Then 'if the file is protected, close without saving or moving the file
+        
             openWorkbook.Close False
+            
         Else
-            Call Copy 'Copy opens the files and gets info needed
+        
+            Call Copy
        
             openWorkbook.Close False
        
-            Name sPath & "\" & tFil As sPath & "\Completed\" & tFil
+            Name sPath & "\" & tFil As sPath & "\Completed\" & tFil 'move file to completed folder
+            
         End If
+        
     End If
    
-    tFil = Dir
+    tFil = Dir 'select next file
    
 Loop
 
 Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 
-MsgBox ("You're Done! Good Job :)")
+MsgBox ("Macro complete. Please check folder for protected templates that have been skipped.")
 
-End Sub
+End Sub 'begin()
 
 Sub Copy() 
 
@@ -81,21 +88,24 @@ Dim nextRow As Long
 
 'CurrentBookName = ActiveWoorkbook.Name
    
-        'If UCase(wks.Name) Like UCase("*WR TEMPLATE V2*") Then
-            'wks.Activate
+        If UCase(wks.Name) Like UCase("*DAILY*TOTAL*") Then 'Find daily total tab to use
+            wks.Activate
+        End If
+        
+        'unmerge the merged cells containing data needed
         Range("D5:G5").UnMerge
         Range("T3:V3").UnMerge
         Range("A24:C28").UnMerge
         Range("E24:G28").UnMerge
         Range("I24:L28").UnMerge
        
-        If UCase(Range("D5").Value) Like UCase("*Loc*Codd:*") Then 'Form differs in format for location code, case to bipass errors associated
+        If UCase(Range("D5").Value) Like UCase("*Loc*Codd:*") Then 'Template differs in format for location codes, case statement to get actual loc code
             locCde = Range("D6").Value
         Else
             locCde = Range("D5").Value
         End If
        
-        dteRun = Date - 1
+        dteRun = Date - 2 'will always be 2 days behind
         frstShftCntAct = Range("H20").Value
         frstShftOut = Range("J20").Value
         scndShftCntAct = Range("R20").Value
@@ -155,8 +165,10 @@ Dim nextRow As Long
         ThisWorkbook.Sheets("Running Total").Range("AD" & nextRow).Value = oxvrCsOrd
         ThisWorkbook.Sheets("Running Total").Range("AE" & nextRow).Value = dsWpCsOrd
        
+        'remove spaces from location code, not needed
         ThisWorkbook.Sheets("Running Total").Range("A" & nextRow).Replace What:=" ", Replacement:=""
        
+        'empty all variables
         locCde = empty
         dteRun = empty
         frstShftCntAct= empty
@@ -188,4 +200,4 @@ Dim nextRow As Long
         eCasOrd = empty
         nextRow = empty
 
-End Sub
+End Sub 'copy()
